@@ -71,6 +71,10 @@ app.post(
       //   await order.save();
 
       console.log(userId, products, session.id, session.payment_status);
+    } else if (event.type === "checkout.session.payment_failed") {
+      const session = event.data.object;
+      const userId = session.metadata.userId;
+      console.log(userId, session.id, session.payment_status);
     }
 
     res.status(200).send("Webhook received");
