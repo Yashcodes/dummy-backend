@@ -56,47 +56,25 @@ app.post(
   async (req, res) => {
     const event = req.body;
 
-    console.log("Webhook event received:", event.type);
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+      const userId = session.metadata.userId;
+      const products = JSON.parse(session.metadata.products);
 
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        const userId = session.metadata.userId;
-        const products = JSON.parse(session.metadata.products);
+      //   const order = new Order({
+      //     userId,
+      //     products,
+      //     paymentId: session.id,
+      //     paymentStatus: session.payment_status,
+      //   });
 
-        // const order = new Order({
-        //   userId,
-        //   products,
-        //   paymentId: session.id,
-        //   paymentStatus: session.payment_status,
-        // });
+      //   await order.save();
 
-        // await order.save();
-        console.log(
-          "Order completed:",
-          userId,
-          products,
-          session.id,
-          session.payment_status
-        );
-        break;
-      }
-
-      case "checkout.session.payment_failed": {
-        const session = event.data.object;
-        const userId = session.metadata.userId;
-
-        console.log(
-          "Payment failed:",
-          userId,
-          session.id,
-          session.payment_status
-        );
-        break;
-      }
-
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
+      console.log(userId, products, session.id, session.payment_status);
+    } else if (event.type === "checkout.session.payment_failed") {
+      const session = event.data.object;
+      const userId = session.metadata.userId;
+      console.log(userId, session.id, session.payment_status);
     }
 
     res.status(200).send("Webhook received");
